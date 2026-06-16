@@ -5,8 +5,8 @@ KERNEL=$2
 
 source /etc/os-release
 
-# Bookworm uses initramfs so this is not needed
-if [ $VERSION_CODENAME = "bookworm" ];then
+# Bookworm/Trixie use initramfs so this is not needed
+if [ $VERSION_CODENAME = "bookworm" ] || [ $VERSION_CODENAME = "trixie" ];then
 	exit
 fi
 

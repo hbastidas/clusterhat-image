@@ -114,6 +114,18 @@ if [ -f "$SOURCE/$VER-raspios-bookworm-armhf-full.img" ];then
  SOURCES[$CNT]="$VER-raspios-bookworm-armhf-full.img|$VER-$REV-bookworm-ClusterCTRL-armhf-full|FULL|RASPIOS32BOOKWORM"
  let CNT=$CNT+1
 fi
+if [ -f "$SOURCE/$VER-raspios-trixie-armhf.img" ];then
+ SOURCES[$CNT]="$VER-raspios-trixie-armhf.img|$VER-$REV-trixie-ClusterCTRL-armhf|STD|RASPIOS32TRIXIE"
+ let CNT=$CNT+1
+fi
+if [ -f "$SOURCE/$VER-raspios-trixie-armhf-lite.img" ];then
+ SOURCES[$CNT]="$VER-raspios-trixie-armhf-lite.img|$VER-$REV-trixie-ClusterCTRL-armhf-lite|LITE|RASPIOS32TRIXIE"
+ let CNT=$CNT+1
+fi
+if [ -f "$SOURCE/$VER-raspios-trixie-armhf-full.img" ];then
+ SOURCES[$CNT]="$VER-raspios-trixie-armhf-full.img|$VER-$REV-trixie-ClusterCTRL-armhf-full|FULL|RASPIOS32TRIXIE"
+ let CNT=$CNT+1
+fi
 
 # Check for Raspberry Pi OS 64-bit
 if [ -f "$SOURCE/$VER-raspios-buster-arm64.img" ];then
@@ -146,6 +158,18 @@ if [ -f "$SOURCE/$VER-raspios-bookworm-arm64-lite.img" ];then
 fi
 if [ -f "$SOURCE/$VER-raspios-bookworm-arm64-full.img" ];then
  SOURCES[$CNT]="$VER-raspios-bookworm-arm64-full.img|$VER-$REV-bookworm-ClusterCTRL-arm64-full|FULL|RASPIOS64BOOKWORM"
+ let CNT=$CNT+1
+fi
+if [ -f "$SOURCE/$VER-raspios-trixie-arm64.img" ];then
+ SOURCES[$CNT]="$VER-raspios-trixie-arm64.img|$VER-$REV-trixie-ClusterCTRL-arm64|STD|RASPIOS64TRIXIE"
+ let CNT=$CNT+1
+fi
+if [ -f "$SOURCE/$VER-raspios-trixie-arm64-lite.img" ];then
+ SOURCES[$CNT]="$VER-raspios-trixie-arm64-lite.img|$VER-$REV-trixie-ClusterCTRL-arm64-lite|LITE|RASPIOS64TRIXIE"
+ let CNT=$CNT+1
+fi
+if [ -f "$SOURCE/$VER-raspios-trixie-arm64-full.img" ];then
+ SOURCES[$CNT]="$VER-raspios-trixie-arm64-full.img|$VER-$REV-trixie-ClusterCTRL-arm64-full|FULL|RASPIOS64TRIXIE"
  let CNT=$CNT+1
 fi
 
@@ -190,7 +214,7 @@ for BUILD in "${SOURCES[@]}"; do
  VARNAME=${IMAGE[2]}
  RELEASE=${IMAGE[3]}
 
- if [ $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" ];then
+ if [ $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" -o $RELEASE = "RASPIOS64TRIXIE" -o $RELEASE = "RASPIOS32TRIXIE" ];then
   FW="boot/firmware"
  else
   FW="boot"
@@ -261,7 +285,7 @@ EOF
   elif [ $RELEASE = "BUSTER" -o $RELEASE = "RASPIOS32BUSTER" -o $RELEASE = "RASPIOS64BUSTER" \
 	-o $RELEASE = "RASPIOS32BULLSEYE" -o $RELEASE = "RASPIOS64BULLSEYE" ]; then
    INSTALLEXTRA+=" initramfs-tools-core python3-smbus python3-usb python3-libusb1 ifmetric"
-  elif [ $RELEASE =  "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" ]; then
+  elif [ $RELEASE =  "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" -o $RELEASE = "RASPIOS64TRIXIE" -o $RELEASE = "RASPIOS32TRIXIE" ]; then
    INSTALLEXTRA+=" initramfs-tools-core python3-smbus python3-usb python3-libusb1 ifmetric python3-libgpiod ifupdown"
   fi
 
@@ -335,7 +359,7 @@ EOF
   # NAT Controller is on 172.19.181.254
   # A USB network (usb0) device plugged into the controller will have fallback IP of 172.19.181.253
 
-  if [ $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" ];then
+  if [ $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" -o $RELEASE = "RASPIOS64TRIXIE" -o $RELEASE = "RASPIOS32TRIXIE" ];then
    cat << EOF >> $MNT/etc/dhcp/dhclient.conf
 # START ClusterCTRL config
 timeout 10;
@@ -423,7 +447,8 @@ EOF
   if [ "$SERIALAUTOLOGIN" = "1" ];then
    if [ $RELEASE = "BUSTER" -o $RELEASE = "RASPIOS32BUSTER" -o $RELEASE = "RASPIOS64BUSTER" \
 	-o $RELEASE = "RASPIOS32BULLSEYE" -o $RELEASE = "RASPIOS64BULLSEYE" \
-	-o $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" ];then
+	-o $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" \
+	-o $RELEASE = "RASPIOS64TRIXIE" -o $RELEASE = "RASPIOS32TRIXIE" ];then
     mkdir -p $MNT/etc/systemd/system/serial-getty@ttyS0.service.d/
     cat > $MNT/etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf << EOF
 [Service]
@@ -536,12 +561,12 @@ EOF
   chroot $MNT2/root/ systemctl disable clusterctrl-rpiboot
 
   # Copy network defaults if needed
-  if [ $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" ]; then
+  if [ $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" -o $RELEASE = "RASPIOS64TRIXIE" -o $RELEASE = "RASPIOS32TRIXIE" ]; then
    rm -f $MNT2/root/etc/network/interfaces.d/clusterctrl
    cp $MNT2/root/usr/share/clusterctrl/interfaces.bookworm.p $MNT2/root/etc/network/interfaces.d/clusterctrl
   fi
 
-  if [ $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" ]; then
+  if [ $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" -o $RELEASE = "RASPIOS64TRIXIE" -o $RELEASE = "RASPIOS32TRIXIE" ]; then
    echo "172.19.180.254:/var/lib/clusterctrl/nfs/p253/boot/firmware /boot/firmware nfs defaults 0 0" >> $MNT2/root/etc/fstab
    echo "FWLOC='/$FW/'" > $MNT2/root/etc/default/raspberrypi-sys-mods
    mkdir -p $MNT2/root/etc/systemd/system/networking.service.d/
@@ -552,7 +577,7 @@ EOF
   echo -e "dwc2\n8021q\nuio_pdrv_genirq\nuio\nusb_f_acm\nu_serial\nu_ether\nlibcomposite\nudc_core\nipv6\nusb_f_ncm\nusb_f_ecm\nusb_f_eem\nusb_f_rndis\n" >> $MNT2/root/etc/initramfs-tools/modules
   if [ $RELEASE = "RASPIOS64BUSTER" -o $RELEASE = "RASPIOS64BULLSEYE" ];then
    echo -e "\n[all]\ninitramfs initramfs8.img\ndtparam=sd_poll_once=on\n" >> $MNT2/root/$FW/config.txt
-  elif [ $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" ];then
+  elif [ $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" -o $RELEASE = "RASPIOS64TRIXIE" -o $RELEASE = "RASPIOS32TRIXIE" ];then
    echo "Skipping initramfs config"
   elif [ $RELEASE = "RASPIOS32BULLSEYE" ];then
    echo -e "\n[pi0]\ninitramfs initramfs.img\n[pi02]\ninitramfs initramfs7.img\n[pi1]\ninitramfs initramfs.img\n[pi2]\ninitramfs initramfs7.img\n[pi3]\ninitramfs initramfs7.img\n[pi4]\ninitramfs initramfs8.img\n[all]\ndtparam=sd_poll_once=on\n" >> $MNT2/root/$FW/config.txt
@@ -568,12 +593,12 @@ EOF
   #chroot $MNT2/root/ /bin/bash -c "raspi-config nonint do_serial 0"
 
   sed -i "s# init=.*##" $MNT2/root/$FW/cmdline.txt
-  if [ $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" ]; then
+  if [ $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" -o $RELEASE = "RASPIOS64TRIXIE" -o $RELEASE = "RASPIOS32TRIXIE" ]; then
    sed -i '$ s#$# init=/usr/lib/raspberrypi-sys-mods/firstboot#'  $MNT2/root/$FW/cmdline.txt
   fi
   sed -i "s#^MODULES=.*#MODULES=netboot#" $MNT2/root/etc/initramfs-tools/initramfs.conf
   echo "BOOT=nfs" >> $MNT2/root/etc/initramfs-tools/initramfs.conf
-  if [ $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" ]; then
+  if [ $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" -o $RELEASE = "RASPIOS64TRIXIE" -o $RELEASE = "RASPIOS32TRIXIE" ]; then
    echo "COMPRESS already set"
   else
    sed -i "s#^COMPRESS=.*#COMPRESS=xz#" $MNT2/root/etc/initramfs-tools/initramfs.conf
@@ -586,7 +611,8 @@ EOF
 
   if [ "$SERIALAUTOLOGIN" = "1" ];then
    if [ $RELEASE = "BUSTER" -o $RELEASE = "RASPIOS32BUSTER" -o $RELEASE = "RASPIOS64BUSTER" \
-	$RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" ]; then
+	$RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" \
+	-o $RELEASE = "RASPIOS64TRIXIE" -o $RELEASE = "RASPIOS32TRIXIE" ]; then
     mkdir -p $MNT2/root/etc/systemd/system/serial-getty@ttyS0.service.d/
     cat > $MNT2/root/etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf << EOF
 [Service]
@@ -599,7 +625,7 @@ EOF
    fi
   fi
 
-  if [ $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" ]; then
+  if [ $RELEASE = "RASPIOS64BOOKWORM" -o $RELEASE = "RASPIOS32BOOKWORM" -o $RELEASE = "RASPIOS64TRIXIE" -o $RELEASE = "RASPIOS32TRIXIE" ]; then
    chroot $MNT2/root /bin/bash -c "update-initramfs -k all -u"
   else
    # 3A+/CM3/CM3+
