@@ -8,12 +8,12 @@ RECONFIG_SH="$ROOT/files/usr/sbin/reconfig-clusterctrl"
 POSTINST_SH="$ROOT/files/etc/kernel/postinst.d/clusterctrl"
 
 assert_contains() {
- FILE="$1"
- TEXT="$2"
- DESC="$3"
- if ! grep -Fq "$TEXT" "$FILE"; then
-  echo "FAIL: $DESC"
-  echo "Missing text: $TEXT"
+ file="$1"
+ text="$2"
+ desc="$3"
+ if ! grep -Fq "$text" "$file"; then
+  echo "FAIL: $desc"
+  echo "Missing text: $text"
   exit 1
  fi
 }
