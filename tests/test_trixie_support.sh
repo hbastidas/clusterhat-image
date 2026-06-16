@@ -11,6 +11,10 @@ assert_contains() {
  file="$1"
  text="$2"
  desc="$3"
+ if [ ! -f "$file" ]; then
+  echo "FAIL: missing file $file"
+  exit 1
+ fi
  if ! grep -Fq "$text" "$file"; then
   echo "FAIL: $desc"
   echo "Missing text: $text"
