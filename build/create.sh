@@ -16,15 +16,8 @@ if [ $# -ne 1 ]; then
  exit
 fi
 
-# Check directories exist
-if [ ! -d "$MNT" ] ;then
- echo "\$MNT directory does not exist."
- exit
-fi
-if [ ! -d "$MNT2" ]; then
- echo "\$MNT2 directory does not exist."
- exit
-fi
+# Ensure required working directories exist
+mkdir -p "$DEST" "$MNT" "$MNT2"
 
 # Get version from command line
 VER=$1
