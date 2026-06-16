@@ -17,7 +17,7 @@ if [ $# -ne 1 ]; then
 fi
 
 # Ensure required working directories exist
-mkdir -p "$DEST" "$MNT" "$MNT2"
+mkdir -p "$SOURCE" "$DEST" "$MNT" "$MNT2"
 
 # Get version from command line
 VER=$1
