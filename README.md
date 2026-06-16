@@ -19,6 +19,24 @@ The "2017-09-07" date above should be the date from the Raspbian/Raspberry Pi OS
 
 When building arm64 images you need to be on an arm64 machine.
 
+### Building Debian Trixie based images
+
+Trixie-based Raspberry Pi OS images are detected automatically when they are present in `build/img/` and follow the standard naming format:
+
+- `YYYY-MM-DD-raspios-trixie-armhf-lite.img`
+- `YYYY-MM-DD-raspios-trixie-armhf.img`
+- `YYYY-MM-DD-raspios-trixie-armhf-full.img`
+- `YYYY-MM-DD-raspios-trixie-arm64-lite.img`
+- `YYYY-MM-DD-raspios-trixie-arm64.img`
+- `YYYY-MM-DD-raspios-trixie-arm64-full.img`
+
+Then run the build with the matching date prefix, for example:
+
+```
+cd build
+./create YYYY-MM-DD
+```
+
 ## Building on x86_64
 
 Images can be built from other architectures using qemu (tested on x86_64 but may work on others)
@@ -32,4 +50,3 @@ Then follow the standard steps
 The files/ directory contains the files extracted into the root filesystem of a Cluster HAT image.
 
 For support contact: https://portal.8086.net/submitticket.php?step=2&deptid=1
-
